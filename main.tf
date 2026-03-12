@@ -10,3 +10,4 @@ resource "aws_instance" "demo_ec2" {
     Name = "Terraform-Demo-Instance"
   }
 }
+
