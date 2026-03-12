@@ -3,13 +3,18 @@ name: Terraform Destroy EC2
 on:
   workflow_dispatch:
 
+# REQUIRED for OIDC handshake
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   destroy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4 # Updated to v4 for 2026 standards
+      uses: actions/checkout@v4
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -17,18 +22,16 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        # the Deploy workflow
+        role-to-assume: arn:aws:iam::357312912471:role/GitHubActionTestRole
         aws-region: us-east-1
 
     - name: Terraform Init
-      # Adding -input=false ensures it doesn't hang waiting for user input
       run: terraform init -input=false
 
     - name: Terraform Plan Destroy
-      # It is best practice to run a plan first to see what is happening
-      run: terraform plan -destroy
+      # This shows you what will be deleted in the GitHub logs before the actual destroy
+      run: terraform plan -destroy -input=false
 
     - name: Terraform Destroy
-      # Use -input=false here as well
       run: terraform destroy -auto-approve -input=false
