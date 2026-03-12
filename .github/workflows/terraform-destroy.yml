@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # Updated to v4 for 2026 standards
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -22,8 +22,13 @@ jobs:
         aws-region: us-east-1
 
     - name: Terraform Init
-      run: terraform init
+      # Adding -input=false ensures it doesn't hang waiting for user input
+      run: terraform init -input=false
+
+    - name: Terraform Plan Destroy
+      # It is best practice to run a plan first to see what is happening
+      run: terraform plan -destroy
 
     - name: Terraform Destroy
-      run: terraform destroy -auto-approve
-
+      # Use -input=false here as well
+      run: terraform destroy -auto-approve -input=false
