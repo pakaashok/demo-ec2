@@ -16,6 +16,6 @@ resource "aws_instance" "demo_ec2" {
   instance_type = "t2.micro"
 
   tags = {
-    Name = "Terra-Demo-Instance"
+    Name = "OIDC-Demo-Instance"
   }
 }
